@@ -1,0 +1,2 @@
+../User/Src/crc16.c:4:10:CRC16_Modbus	32	static
+../User/Src/crc16.c:21:5:CRC16_Check	24	static
