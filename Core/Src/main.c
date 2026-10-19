@@ -101,16 +101,38 @@ int main(void)
 	 {
 		 Error_Handler();
 	 }
-	 open_valve();
+  frock_state frock;
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  /* 初值设为高：如果上电时X3已经为低，第一次读取也会触发打开。 */
+  GPIO_PinState last_x2 = GPIO_PIN_SET;
+  uint8_t valve_state = 0;
   while (1)
   {
-    /* USER CODE END WHILE */
+    GPIO_PinState current_x2 = DN20_X2();
+    Modbus_ReadFlow(1, &flow_value);
+    if (last_x2 == GPIO_PIN_SET && current_x2 == GPIO_PIN_RESET)
+    {
+      if (valve_state == 0)
+      {
+        valve_state = 1;
+        open_valve();
+      }
+      else
+      {
+        valve_state = 0;
+        if (flow_value <= 1)
+        {
+          angle_valve_blow();
+          close_valve();
+        }
 
-    /* USER CODE BEGIN 3 */
+      }
+    }
+    last_x2 = current_x2;
+
   }
   /* USER CODE END 3 */
 }
